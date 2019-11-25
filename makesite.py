@@ -175,8 +175,8 @@ def main():
     # Default parameters.
     params = {
         'base_path': '',
-        'subtitle': 'Lorem Ipsum',
-        'author': 'Admin',
+        'subtitle': '- Miguel Boekhold',
+        'author': 'Miguel Boekhold',
         'site_url': 'http://localhost:8000',
         'current_year': datetime.datetime.now().year
     }
@@ -197,9 +197,12 @@ def main():
     post_layout = render(page_layout, content=post_layout)
     list_layout = render(page_layout, content=list_layout)
 
+    # Home page with recent blog posts
+    home_params = dict(params, title=params['author'], subtitle='')
+
     # Create site pages.
     make_pages('content/_index.html', '_site/index.html',
-               page_layout, **params)
+               page_layout, **home_params)
     make_pages('content/[!_]*.html', '_site/{{ slug }}/index.html',
                page_layout, **params)
 

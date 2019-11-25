@@ -3,7 +3,7 @@ body {
     margin: 0;
     line-height: 1.5em;
     color: #333333;
-    font-family: helvetica, arial, sans-serif;
+    font-family: 'Karla', helvetica, arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -31,12 +31,22 @@ nav section, header section, main, footer section {
     padding: 0 0.5em;
 }
 
+nav section {
+    margin-top: 10px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    background: #fff;
+    font-size: 34px;
+}
 
 /* Navigation panel */
 nav {
-    background: #333333;
-    border-bottom: thin solid #111111;
-    line-height: 3em;
+    text-align: center;
+    border-top: 1px solid #edeeee;
+
 }
 
 nav a {
@@ -44,18 +54,16 @@ nav a {
 }
 
 nav a:link, nav a:visited {
-    color: #cccccc;
+    color: #464646;
 }
 
 nav a:hover, nav a:active {
-    color: #ffffff;
+    color: #000;
     text-decoration: none;
 }
 
-@media screen and (min-width: 600px) {
-    nav .links {
-        float: right;
-    }
+#comments {
+    border-top: 1px solid #edeeee;
 }
 
 
