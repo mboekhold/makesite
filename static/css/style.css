@@ -112,12 +112,23 @@ p.meta {
     margin-top: 0;
     font-size: 0.8em;
     color: #777777;
-    font-style: italic;
 }
 
 p.summary {
     margin-top: 0.25em;
     margin-bottom: 0.25em;
+}
+
+p.category {
+    margin: 0 auto;
+    font-size: 0.8em;
+    color: #777777;
+    font-weight: 600;
+}
+
+p.category:hover {
+    cursor: pointer;
+    color: #333333;
 }
 
 div .more {

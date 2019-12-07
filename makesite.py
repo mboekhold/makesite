@@ -93,6 +93,11 @@ def read_content(filename):
     end = 0
     for key, val, end in read_headers(text):
         content[key] = val
+        if 'category' in key:
+            content['category'] = val
+        else:
+            content['category'] = 'Uncategorized'
+
 
     # Separate content from headers.
     text = text[end:]
@@ -190,19 +195,16 @@ def main():
     post_layout = fread('layout/post.html')
     list_layout = fread('layout/list.html')
     item_layout = fread('layout/item.html')
+    home_layout = fread('layout/home.html')
     feed_xml = fread('layout/feed.xml')
     item_xml = fread('layout/item.xml')
 
     # Combine layouts to form final layouts.
     post_layout = render(page_layout, content=post_layout)
     list_layout = render(page_layout, content=list_layout)
-
-    # Home page with recent blog posts
-    home_params = dict(params, title=params['author'], subtitle='')
+    home_layout = render(page_layout, content=home_layout)
 
     # Create site pages.
-    make_pages('content/_index.html', '_site/index.html',
-               page_layout, **home_params)
     make_pages('content/[!_]*.html', '_site/{{ slug }}/index.html',
                page_layout, **params)
 
@@ -210,21 +212,22 @@ def main():
     blog_posts = make_pages('content/blog/*.md',
                             '_site/blog/{{ slug }}/index.html',
                             post_layout, blog='blog', **params)
-    news_posts = make_pages('content/news/*.html',
-                            '_site/news/{{ slug }}/index.html',
-                            post_layout, blog='news', **params)
+
 
     # Create blog list pages.
     make_list(blog_posts, '_site/blog/index.html',
               list_layout, item_layout, blog='blog', title='Blog', **params)
-    make_list(news_posts, '_site/news/index.html',
-              list_layout, item_layout, blog='news', title='News', **params)
+
+    # Create home page with recent blog posts
+    home_params = dict(params, title=params['author'], subtitle='')
+    make_list(blog_posts[:5], '_site/index.html',
+              home_layout, item_layout, blog='blog', **home_params)
+    # make_pages('content/_index.html', '_site/index.html',
+    #            page_layout, **home_params)
 
     # Create RSS feeds.
     make_list(blog_posts, '_site/blog/rss.xml',
               feed_xml, item_xml, blog='blog', title='Blog', **params)
-    make_list(news_posts, '_site/news/rss.xml',
-              feed_xml, item_xml, blog='news', title='News', **params)
 
 
 # Test parameter to be set temporarily by unit tests.
