@@ -26,7 +26,6 @@
 
 """Make static website/blog with Python."""
 
-
 import os
 import shutil
 import re
@@ -93,11 +92,6 @@ def read_content(filename):
     end = 0
     for key, val, end in read_headers(text):
         content[key] = val
-        if 'category' in key:
-            content['category'] = val
-        else:
-            content['category'] = 'Uncategorized'
-
 
     # Separate content from headers.
     text = text[end:]
@@ -117,6 +111,14 @@ def read_content(filename):
         'content': text,
         'rfc_2822_date': rfc_2822_format(content['date'])
     })
+
+    # Set categories for blog posts
+    if 'blog' in filename:
+        blog_dir = filename.split("/")
+        if len(blog_dir) == 4:
+            content['category'] = blog_dir[2].capitalize()
+        else:
+            content['category'] = 'Uncategorized'
 
     return content
 
@@ -208,19 +210,28 @@ def main():
     make_pages('content/[!_]*.html', '_site/{{ slug }}/index.html',
                page_layout, **params)
 
-    # Create blogs.
-    blog_posts = make_pages('content/blog/*.md',
+    # Create all blog posts.
+    blog_posts = make_pages('content/blog/[!_]*.md',
                             '_site/blog/{{ slug }}/index.html',
                             post_layout, blog='blog', **params)
 
+    programming_posts = make_pages('content/blog/programming/[!_]*.md',
+                                   '_site/blog/{{ slug }}/index.html',
+                                   post_layout, blog='blog', **params)
+
+    philosophy_posts = make_pages('content/blog/philosophy/[!_]*.md',
+                                  '_site/blog/{{ slug }}/index.html',
+                                  post_layout, blog='blog', **params)
+
+    all_posts = blog_posts + programming_posts + philosophy_posts
 
     # Create blog list pages.
-    make_list(blog_posts, '_site/blog/index.html',
+    make_list(all_posts, '_site/blog/index.html',
               list_layout, item_layout, blog='blog', title='Blog', **params)
 
     # Create home page with recent blog posts
     home_params = dict(params, title=params['author'], subtitle='')
-    make_list(blog_posts[:5], '_site/index.html',
+    make_list(all_posts[:5], '_site/index.html',
               home_layout, item_layout, blog='blog', **home_params)
     # make_pages('content/_index.html', '_site/index.html',
     #            page_layout, **home_params)
@@ -232,7 +243,6 @@ def main():
 
 # Test parameter to be set temporarily by unit tests.
 _test = None
-
 
 if __name__ == '__main__':
     main()
