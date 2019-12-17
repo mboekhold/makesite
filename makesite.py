@@ -33,6 +33,9 @@ import glob
 import sys
 import json
 import datetime
+from collections import defaultdict
+
+categories = []
 
 
 def fread(filename):
@@ -119,6 +122,7 @@ def read_content(filename):
             content['category'] = blog_dir[2].capitalize()
         else:
             content['category'] = 'Uncategorized'
+        categories.append(content['category'])
 
     return content
 
@@ -173,6 +177,24 @@ def make_list(posts, dst, list_layout, item_layout, **params):
     fwrite(dst_path, output)
 
 
+def make_category_list(posts, dst, list_layout, item_layout, **params):
+    grouped_posts = defaultdict(list)
+    for value in posts:
+        category = value['category']
+        grouped_posts[category].append(value)
+    items = []
+    for key, value in grouped_posts.items():
+        item_params = dict(params, category=key, post=value[0].get('title'))
+        item = render(item_layout, **item_params)
+        items.append(item)
+
+    params['content'] = ''.join(items)
+    dst_path = render(dst, **params)
+    output = render(list_layout, **params)
+
+    log('Rendering list => {} ...', dst_path)
+    fwrite(dst_path, output)
+
 def main():
     # Create a new _site directory from scratch.
     if os.path.isdir('_site'):
@@ -185,6 +207,7 @@ def main():
         'subtitle': '- Miguel Boekhold',
         'author': 'Miguel Boekhold',
         'site_url': 'http://localhost:8000',
+        'categories': 'Philosophy',
         'current_year': datetime.datetime.now().year
     }
 
@@ -196,6 +219,8 @@ def main():
     page_layout = fread('layout/page.html')
     post_layout = fread('layout/post.html')
     list_layout = fread('layout/list.html')
+    cat_list_layout = fread('layout/category_list.html')
+    cat_item_layout = fread('layout/category_item.html')
     item_layout = fread('layout/item.html')
     home_layout = fread('layout/home.html')
     feed_xml = fread('layout/feed.xml')
@@ -203,11 +228,16 @@ def main():
 
     # Combine layouts to form final layouts.
     post_layout = render(page_layout, content=post_layout)
+    cat_list_layout = render(page_layout, content = cat_list_layout)
     list_layout = render(page_layout, content=list_layout)
     home_layout = render(page_layout, content=home_layout)
 
     # Create site pages.
     make_pages('content/[!_]*.html', '_site/{{ slug }}/index.html',
+               page_layout, **params)
+
+    # Create blog category page
+    make_pages('content/blog/[!_]*.html', '_site/blog/{{ slug }}/index.html',
                page_layout, **params)
 
     # Create all blog posts.
@@ -225,7 +255,11 @@ def main():
 
     all_posts = blog_posts + programming_posts + philosophy_posts
 
-    # Create blog list pages.
+    # Create category list
+    make_category_list(all_posts, '_site/blog/categories/index.html',
+                       cat_list_layout, cat_item_layout, blog='blog', title='Categories', **params)
+
+    # Create blog list pages
     make_list(all_posts, '_site/blog/index.html',
               list_layout, item_layout, blog='blog', title='Blog', **params)
 
@@ -233,8 +267,6 @@ def main():
     home_params = dict(params, title=params['author'], subtitle='')
     make_list(all_posts[:5], '_site/index.html',
               home_layout, item_layout, blog='blog', **home_params)
-    # make_pages('content/_index.html', '_site/index.html',
-    #            page_layout, **home_params)
 
     # Create RSS feeds.
     make_list(blog_posts, '_site/blog/rss.xml',

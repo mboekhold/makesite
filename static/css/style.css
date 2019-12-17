@@ -119,14 +119,14 @@ p.summary {
     margin-bottom: 0.25em;
 }
 
-p.category {
+a.category {
     margin: 0 auto;
     font-size: 0.8em;
     color: #777777;
     font-weight: 600;
 }
 
-p.category:hover {
+a.category:hover {
     cursor: pointer;
     color: #333333;
 }
