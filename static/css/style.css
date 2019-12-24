@@ -126,7 +126,7 @@ p.category, p.duration {
     font-weight: 600;
 }
 
-p.category:hover {
+a.category:hover {
     cursor: pointer;
     color: #333333;
 }
