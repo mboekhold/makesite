@@ -1,4 +1,4 @@
-<!-- title: another one -->
+<!-- title: The right to silence -->
 Proin quam urna, pulvinar id ipsum ac, mattis consectetur ante. Praesent
 non justo lectus. Duis egestas arcu libero, quis laoreet dolor volutpat
 ut. Donec facilisis orci sit amet sem blandit elementum. Vestibulum

@@ -79,7 +79,6 @@ def read_content(filename):
     """Read content and metadata from file into a dictionary."""
     # Read file content.
     text = fread(filename)
-
     # Read metadata and save it in a dictionary.
     date_slug = os.path.basename(filename).split('.')[0]
     match = re.search(r'^(?:(\d\d\d\d-\d\d-\d\d)-)?(.+)$', date_slug)
@@ -119,6 +118,11 @@ def read_content(filename):
             content['category'] = blog_dir[2].capitalize()
         else:
             content['category'] = 'Uncategorized'
+
+        words = len(text.split(' '))
+        words_per_minute = 200
+        read_duration = (words / words_per_minute)
+        content['read_duration'] = round(read_duration)
 
     return content
 
